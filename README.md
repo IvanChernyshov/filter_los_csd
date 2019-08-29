@@ -9,6 +9,8 @@ This manual consists of two parts:
 * *Installation* containing script requirements and example of conda installation;
 * *Syntax* of the script.
 
+The example of input and output files for the script is provided in *Example* directory.
+
 ## Installation
 
 *filter_los_csd* requires installation of:
