@@ -9,7 +9,7 @@ This manual consists of two parts:
 * *Installation* containing script requirements and example of conda installation;
 * *Syntax* of the script.
 
-The example of input and output files for the script is provided in *Example* directory.
+The example of input and output files for the script is provided in *example* directory.
 
 ## Installation
 
