@@ -67,7 +67,7 @@ As output the script creates **{csv_name}_los.csv** file containing the same inf
 * "LOS": has three possible values:
   * "+": the corresponding contact is line-of-sight;
   * "–": the corresponding contact is not line-of-sight;
-  * "?": the error occurred during the calculation. The only type of errors caught during the testing is inability to find a contact with given atomic labels and distance. However, this rarely happens.
+  * "?": the error occurred during the calculation. The only type of errors caught during the testing is inability to find a contact with given atomic labels and distance. The main source of these errors are disorder issues, thus tuning *--tol* parameter can solve the problem.
 * "SHIELDING": contact shielding value (the definition of the term is given in the manuscript);
 * "SHIELD_ATOM": label of the shielding atom.
 
