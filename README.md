@@ -67,9 +67,14 @@ As output the script creates **{csv_name}_los.csv** file containing the same inf
 * "LOS": has three possible values:
   * "+": the corresponding contact is line-of-sight;
   * "–": the corresponding contact is not line-of-sight;
-  * "?": the error occurred during the calculation. The only type of errors caught during the testing is inability to find contact with given atomic labels and and distance. However, this rarely happens.
+  * "?": the error occurred during the calculation. The only type of errors caught during the testing is inability to find a contact with given atomic labels and distance. However, this rarely happens.
 * "SHIELDING": contact shielding value (the definition of the term is given in the manuscript);
 * "SHIELD_ATOM": label of the shielding atom.
+
+The contact and the shielding atom can be visualized in two steps:
+
+1. find the contact by atomic labels and distance;
+2. the nearest atom to the contact line with SHIELD_ATOM label is a shielding atom.
 
 ### Optional parameters
 
