@@ -1,4 +1,4 @@
-# version 0.03
+# version 0.04
 
 ################################### imports ###################################
 
@@ -500,7 +500,7 @@ class Crystal():
                     Hs[lab1] += [lab2]
                 else:
                     Hs[lab1] = [lab2]
-            if GetAtomicNumber(_label2atom(lab1)) == 1:
+            elif GetAtomicNumber(_label2atom(lab2)) == 1:
                 if lab2 in Hs:
                     Hs[lab2] += [lab1]
                 else:
@@ -678,7 +678,7 @@ class Crystal():
         idx1 = X.index[0]
         idx2s = list(X.loc[X['contact'] == contact].index)
         if len(idx2s) == 0:
-            return None, None, None
+            return None, None
         idx2 = idx2s[0]
         # find rotation matrix
         a0 = np.array([X.loc[idx2,axis] for axis in 'xyz'])
