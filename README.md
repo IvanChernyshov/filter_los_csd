@@ -53,8 +53,8 @@ The script takes two necessary parameters as input:
 
 * *path_csv*: path to CSV file, containing info on parameters of contacts in question.
   **Please note, that CSV file must contain labels of atoms forming the contact and the contact distance!**
-* *path_cif*: path to multiple CIF file, containing CSD entries from CSV file.
-  **Please note, that CIF file must contain info on bonds.** Make sure that the corresponding checkbox was selected before downloading CIF.
+* *path_cif*: path to multiple CIF file, containing CSD entries from CSV file. **Please note, that CIF file must contain info on bonds.** Make sure that the corresponding checkbox was selected before downloading CIF.
+  **Also note, that script were tested only for CIF files extracted from CSD (ConQuest)!**
 
 Thus, the easiest command is:
 
@@ -64,10 +64,11 @@ Thus, the easiest command is:
 
 As output the script creates **{csv_name}_los.csv** file containing the same info as the original file with three additional columns:
 
-* "LOS": has three possible values:
+* "LOS": has four possible values:
   * "+": the corresponding contact is line-of-sight;
   * "–": the corresponding contact is not line-of-sight;
-  * "?": the error occurred during the calculation. The only type of errors caught during the testing is inability to find a contact with given atomic labels and distance. The main source of these errors are disorder issues, thus tuning *--tol* parameter can solve the problem.
+  * "?": the corresponding crystal is larger than specified cell volume cutoff;
+  * "!": the error occurred during the calculation. The only type of errors caught during the testing is inability to find a contact with given atomic labels and distance. The main source of these errors are disorder issues, thus tuning *--tol* parameter can solve the problem.
 * "SHIELDING": contact shielding value (the definition of the term is given in the manuscript);
 * "SHIELD_ATOM": label of the shielding atom.
 
@@ -97,4 +98,6 @@ In addition, the script has several optional parameters:
   * "no": X–H bonds are not normalized;
   * path to the file, each line of those contains space separated element symbol and the length of corresponding X–H bond in angstroms, e.g. "C 1.09".
 * *--tol*: minimal possible distance between different atoms, default 0.005 Å.
-
+* *-V* or *--volume*: maximal allowed cell volume, Å<sup>3</sup>. Available values are:
+  * positive numeric value: in this case the script does not calculate contact shielding for crystals with crystallographic cell volume more than specified. It can be useful if there are a lot of crystals with large crystallographic cells (V > 10 000 Å<sup>3</sup>) which are treated slowly.
+  * unspecified: no filtering by volume is applied.

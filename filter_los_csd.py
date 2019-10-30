@@ -1,4 +1,4 @@
-# version 0.04
+# version 0.05
 
 ################################### imports ###################################
 
@@ -326,6 +326,14 @@ def prepare_contacts(csv, LAB1, LAB2, DIST1):
         contacts[refcode].append((cont, idx))
     
     return contacts
+
+
+def get_volume(cif_text):
+    '''
+    Returns cell volume
+    '''
+    _, cif = CifFile.ReadCif(io.StringIO('\n'.join(cif_text)+'\n')).items()[0]
+    return _str2float(cif.get('_cell_volume'))
 
 
 def get_max_dists(contacts):
@@ -768,14 +776,18 @@ if __name__ == '__main__':
                         help = 'type of X-H bonds normalization: "csd"/"no"/path to the file containing normalized X-H bond distances')
     parser.add_argument('--tol', default = 0.005, type = float,
                         help = 'minimal possible distance between different atoms')
+    parser.add_argument('-V', '--volume', default = '',
+                        help = 'maximal volume of crystallographic unit cell')
     
     # handle cmd arguments
     args = parser.parse_args()
     # paths
     if not os.path.exists(args.path_cif):
         print('Error: bad .CIF filepath: {0}'.format(args.path_cif))
+        sys.exit()
     if not os.path.exists(args.path_csv):
         print('Error: bad .CSV filepath: {0}'.format(args.path_csv))
+        sys.exit()
     # normalization
     if args.norm == 'csd':
         dXH = {6: 1.089, 7: 1.015, 8: 0.993}
@@ -786,13 +798,29 @@ if __name__ == '__main__':
             print('Error: bad normalization filepath: {0}'.format(args.path_cif))
         try:
             dXH = extract_dXH(args.norm)
+        except (KeyboardInterrupt, SystemExit):
+            raise
         except:
             print('Error: bad normalization file format, see manual for the details')
             sys.exit()
-    
     # tolerance
     if args.tol <= 0 or args.tol > 0.5:
         print('Error: tolerance (--tol) must be in (0,0.5] interval')
+        sys.exit()
+    # volume
+    if not args.volume:
+        V = -1
+    else:
+        try:
+            V = float(args.volume)
+            if V <= 0:
+                raise ValueError
+        except ValueError:
+            print('Error: volume (--volume) must be a positive numeric value')
+            sys.exit()
+    
+    # output file
+    path_out = os.path.splitext(args.path_csv)[0] + '_los.csv'
     
     # read input files
     cifs = read_multiple_CIF(args.path_cif)
@@ -815,13 +843,13 @@ if __name__ == '__main__':
     try:
         val = csv.loc[0,args.dist]
         val = float(csv.loc[0,args.dist])
-    except:
+    except ValueError:
         print('Error: column {0} contains non-numeric value: {1}'.format(args.dist, val))
         sys.exit()
     
     # prepare contacts
     contacts = prepare_contacts(csv, args.lab1, args.lab2, args.dist)
-    csv.loc[:,'LOS'] = ['?']*csv.shape[0]
+    csv.loc[:,'LOS'] = ['!']*csv.shape[0]
     csv.loc[:,'SHIELDING'] = [np.nan]*csv.shape[0]
     csv.loc[:,'SHIELD_ATOM'] = ['']*csv.shape[0]
     
@@ -840,8 +868,37 @@ if __name__ == '__main__':
         if refcode not in refcodes:
             cifs.pop(refcode)
     N = len(refcodes)
+    header_flag = True
     for ii, refcode in enumerate(refcodes):
         print('{0}: {1} of {2}'.format(refcode, ii+1, N))
+        # check volume
+        try:
+            vol = get_volume(cifs[refcode])
+            if vol > V:
+                print('{0}: cell volume exceeds {1:.1f} cutoff'.format(refcode, V))
+                df = csv.loc[[_[1] for _ in contacts[refcode]]]
+                df.loc[:,'LOS'] = '?'
+                if header_flag:
+                    df.to_csv(path_out, header = True, mode = 'w',
+                              index = False, float_format = '%.3f')
+                    header_flag = False
+                else:
+                    df.to_csv(path_out, header = False, mode = 'a',
+                              index = False, float_format = '%.3f')
+                continue
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except:
+            print('{0}: error reading CIF file'.format(refcode))
+            df = csv.loc[[_[1] for _ in contacts[refcode]]]
+            if header_flag:
+                df.to_csv(path_out, header = True, mode = 'w',
+                          index = False, float_format = '%.3f')
+                header_flag = False
+            else:
+                df.to_csv(path_out, header = False, mode = 'a',
+                          index = False, float_format = '%.3f')
+            continue
         # find maximal dist
         Rmaxes = get_max_dists([contact for contact, idx in contacts[refcode]])
         # generate cell
@@ -851,27 +908,45 @@ if __name__ == '__main__':
         except (KeyboardInterrupt, SystemExit):
             raise
         except:
-            for contact, idx in contacts[refcode]:
-                csv.loc[idx,'LOS'] = '!'
             print('{0}: error with cell generation'.format(refcode))
+            df = csv.loc[[_[1] for _ in contacts[refcode]]]
+            if header_flag:
+                df.to_csv(path_out, header = True, mode = 'w',
+                          index = False, float_format = '%.3f')
+                header_flag = False
+            else:
+                df.to_csv(path_out, header = False, mode = 'a',
+                          index = False, float_format = '%.3f')
             continue
         # find contacts
         for contact, idx in contacts[refcode]:
             try:
-                shielding, C = X.get_shielding(contact)
+                A, B, dist = contact.split('_')
+                contact_m = '{0}_{1}_{2:.3f}'.format(A, B, float(dist) - 0.001)
+                contact_p = '{0}_{1}_{2:.3f}'.format(A, B, float(dist) + 0.001)
+                for cont in (contact, contact_m, contact_p):
+                    shielding, C = X.get_shielding(cont)
+                    if shielding:
+                        break
                 if shielding is not None:
                     los = '+' if shielding > 0 else '-'
                     csv.loc[idx,'LOS'] = los
                     csv.loc[idx,'SHIELDING'] = shielding
                     csv.loc[idx,'SHIELD_ATOM'] = C
+                else:
+                    print('{0}: error with contact search: {1}'.format(refcode, contact))
             except (KeyboardInterrupt, SystemExit):
                 raise
             except:
-                csv.loc[idx,'LOS'] = '!'
                 print('{0}: error with contact search: {1}'.format(refcode, contact))
-    
-    # save csv with LOS info
-    path_out = os.path.splitext(args.path_csv)[0] + '_los.csv'
-    csv.to_csv(path_out, index = False, float_format = '%.3f')
+        # save to file
+        df = csv.loc[[_[1] for _ in contacts[refcode]]]
+        if header_flag:
+            df.to_csv(path_out, header = True, mode = 'w',
+                      index = False, float_format = '%.3f')
+            header_flag = False
+        else:
+            df.to_csv(path_out, header = False, mode = 'a',
+                      index = False, float_format = '%.3f')
 
 
