@@ -1,4 +1,4 @@
-# version 0.05
+# version 0.06
 
 ################################### imports ###################################
 
@@ -821,6 +821,8 @@ if __name__ == '__main__':
     
     # output file
     path_out = os.path.splitext(args.path_csv)[0] + '_los.csv'
+    if os.path.exists(path_out):
+        os.remove(path_out)
     
     # read input files
     cifs = read_multiple_CIF(args.path_cif)
@@ -869,7 +871,13 @@ if __name__ == '__main__':
             cifs.pop(refcode)
     N = len(refcodes)
     header_flag = True
+    text = ''
     for ii, refcode in enumerate(refcodes):
+        # save to file
+        if ii > 0 and not ii % 10:
+            with open(path_out, 'a', newline = '\n') as outf:
+                outf.write(text)
+            text = ''
         print('{0}: {1} of {2}'.format(refcode, ii+1, N))
         # check volume
         try:
@@ -878,26 +886,24 @@ if __name__ == '__main__':
                 print('{0}: cell volume exceeds {1:.1f} cutoff'.format(refcode, V))
                 df = csv.loc[[_[1] for _ in contacts[refcode]]]
                 df.loc[:,'LOS'] = '?'
+                # prepare text
                 if header_flag:
-                    df.to_csv(path_out, header = True, mode = 'w',
-                              index = False, float_format = '%.3f')
+                    text += df.to_csv(header = True, index = False, float_format = '%.3f', sep = ',')
                     header_flag = False
                 else:
-                    df.to_csv(path_out, header = False, mode = 'a',
-                              index = False, float_format = '%.3f')
+                    text += df.to_csv(header = False, index = False, float_format = '%.3f', sep = ',')
                 continue
         except (KeyboardInterrupt, SystemExit):
             raise
         except:
             print('{0}: error reading CIF file'.format(refcode))
             df = csv.loc[[_[1] for _ in contacts[refcode]]]
+            # prepare text
             if header_flag:
-                df.to_csv(path_out, header = True, mode = 'w',
-                          index = False, float_format = '%.3f')
+                text += df.to_csv(header = True, index = False, float_format = '%.3f', sep = ',')
                 header_flag = False
             else:
-                df.to_csv(path_out, header = False, mode = 'a',
-                          index = False, float_format = '%.3f')
+                text += df.to_csv(header = False, index = False, float_format = '%.3f', sep = ',')
             continue
         # find maximal dist
         Rmaxes = get_max_dists([contact for contact, idx in contacts[refcode]])
@@ -910,13 +916,12 @@ if __name__ == '__main__':
         except:
             print('{0}: error with cell generation'.format(refcode))
             df = csv.loc[[_[1] for _ in contacts[refcode]]]
+            # prepare text
             if header_flag:
-                df.to_csv(path_out, header = True, mode = 'w',
-                          index = False, float_format = '%.3f')
+                text += df.to_csv(header = True, index = False, float_format = '%.3f', sep = ',')
                 header_flag = False
             else:
-                df.to_csv(path_out, header = False, mode = 'a',
-                          index = False, float_format = '%.3f')
+                text += df.to_csv(header = False, index = False, float_format = '%.3f', sep = ',')
             continue
         # find contacts
         for contact, idx in contacts[refcode]:
@@ -939,14 +944,16 @@ if __name__ == '__main__':
                 raise
             except:
                 print('{0}: error with contact search: {1}'.format(refcode, contact))
-        # save to file
+        # prepare text
         df = csv.loc[[_[1] for _ in contacts[refcode]]]
         if header_flag:
-            df.to_csv(path_out, header = True, mode = 'w',
-                      index = False, float_format = '%.3f')
+            text += df.to_csv(header = True, index = False, float_format = '%.3f', sep = ',')
             header_flag = False
         else:
-            df.to_csv(path_out, header = False, mode = 'a',
-                      index = False, float_format = '%.3f')
+            text += df.to_csv(header = False, index = False, float_format = '%.3f', sep = ',')
+
+# final save to file
+with open(path_out, 'a', newline = '\n') as outf:
+    outf.write(text)
 
 
