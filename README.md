@@ -1,8 +1,12 @@
 # filter_los_csd
 
-This is the manual for the script which filters line-of-sight contacts from the results of ConQuest search over the Cambridge Structure Database (CSD) entries. The script is available via [GitHub](https://github.com/IvanChernyshov/filter_los_csd). For the underlying scientific context see the corresponding work.
+This is the manual for the script which filters line-of-sight contacts from the results of ConQuest search over the Cambridge Structure Database (CSD) entries. The script is available via [GitHub](https://github.com/IvanChernyshov/filter_los_csd). For the underlying scientific context see the corresponding work: DOI [10.1002/cphc.201901083](http://doi.org/10.1002/cphc.201901083).
 
 If you use the script in your work, please cite generously!
+
+I. Yu. Chernyshov, I. V. Ananyev, E.A. Pidko, Revisiting van der Waals Radii: From Comprehensive Structural Analysis to Knowledge‐Based Classification of Interatomic Contacts. _ChemPhysChem_ **2020**, _21_, 370–376, DOI: [10.1002/cphc.201901083](http://doi.org/10.1002/cphc.201901083).
+
+## Intro
 
 This manual consists of two parts:
 
