@@ -17,37 +17,13 @@ The example of input and output files for the script is provided in *example* di
 
 ## Installation
 
-*filter_los_csd* requires installation of:
-
-1. Python 3;
-2. [numpy](https://numpy.org/);
-3. [pandas](https://pandas.pydata.org/);
-4. [PyCifRW](https://www.iucr.org/resources/cif/software/pycifrw). 
-
-All this libraries can be installed on Windows, Linux and macOS. Here we provide installation using cross-platform software package manager Conda.
-
-The easiest way to get Conda is having it installed as part of the [Anaconda Python distribution](https://www.anaconda.com/distribution/). A possible (but a bit more complex to use) alternative is provided with the smaller and more self-contained [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
-
-After conda installation, create new environment and install necessary packages:
+*filter_los_csd* is a multiplatform Python3 package. Use `pip` to install it:
 
 ```
-> conda create -n los python=3 numpy pandas
-> conda install -n los -c conda-forge pycifrw
+> pip install filter_los_csd
 ```
 
-Finally, the new environment must be activated so that the corresponding python interpreter becomes available in the same shell:
-
-```
-> source activate los
-```
-
-or, in Windows:
-
-```
-> activate los
-```
-
-For more details see the [Conda user guide](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html).
+*filter_los_csd* depends on the [PyCifRW](http://pypi.org/project/PyCifRW/) package, which requires a C/C++ compiler, and pip installation will fail if you do not have one. The best choice for Windows is `Visual Studio Building Tools`, and for Linux, `gcc` would be enough. If you forget about it, pip will give you the installation error and platform-specific advice on fixing it.
 
 ## Syntax
 
@@ -63,7 +39,7 @@ The script takes two necessary parameters as input:
 Thus, the easiest command is:
 
 ```
-> python filter_csd_los.py test.csv test.cif
+> filter_csd_los.py test.csv test.cif
 ```
 
 As output the script creates **{csv_name}_los.csv** file containing the same info as the original file with three additional columns:
@@ -105,3 +81,4 @@ In addition, the script has several optional parameters:
 * *-V* or *--volume*: maximal allowed cell volume, Å<sup>3</sup>. Available values are:
   * positive numeric value: in this case the script does not calculate contact shielding for crystals with crystallographic cell volume more than specified. It can be useful if there are a lot of crystals with large crystallographic cells (V > 10 000 Å<sup>3</sup>) which are treated slowly.
   * unspecified: no filtering by volume is applied.
+
