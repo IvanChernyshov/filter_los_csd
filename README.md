@@ -8,12 +8,7 @@ I. Yu. Chernyshov, I. V. Ananyev, E.A. Pidko, Revisiting van der Waals Radii: Fr
 
 ## Intro
 
-This manual consists of two parts:
-
-* *Installation* containing script requirements and example of conda installation;
-* *Syntax* of the script.
-
-The example of input and output files for the script is provided in *example* directory.
+This manual consists of two parts, describing installation details and syntax of the script. The example of input and output files for the script is provided in [*example*](https://github.com/EPiCs-group/filter_los_csd/tree/master/example) directory.
 
 ## Installation
 

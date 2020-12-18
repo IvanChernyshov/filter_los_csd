@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding = 'utf-8') as inpf:
 
 setuptools.setup(
     name = 'filter_los_csd',
-    version = '1.3.0',
+    version = '1.4.1',
     author = 'Ivan Yu. Chernyshov',
     author_email = 'ivan.chernyshoff@gmail.com',
     description = 'CML tool filtering line-of-sights contacts',

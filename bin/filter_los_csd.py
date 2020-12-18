@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-# version 0.07
-
 ################################### imports ###################################
 
 import re, sys, os, io
@@ -760,7 +758,7 @@ class Crystal():
 if __name__ == '__main__':
     
     # cmd arguments
-    parser = argparse.ArgumentParser(description = 'This script classifies contacts found with CCDC ConQuest program as line-of-sight (LoS) or non-LoS. If you use it in your research, please cite generously: DOI ???')
+    parser = argparse.ArgumentParser(description = 'This script classifies contacts found with CCDC ConQuest program as line-of-sight (LoS) or non-LoS. If you use it in your research, please cite generously: DOI 10.1002/cphc.201901083')
     parser.add_argument('path_csv',
                         help = 'path to .csv containing info about contacts')
     parser.add_argument('path_cif',
