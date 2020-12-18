@@ -20,6 +20,19 @@ This manual consists of two parts, describing installation details and syntax of
 
 *filter_los_csd* depends on the [PyCifRW](http://pypi.org/project/PyCifRW/) package, which requires a C/C++ compiler, and pip installation will fail if you do not have one. The best choice for Windows is `Visual Studio Building Tools`, and for Linux, `gcc` would be enough. If you forget about it, pip will give you the installation error and platform-specific advice on fixing it.
 
+A `Permission denied` error may occur when running the script in some versions of Linux:
+
+```
+> filter_los_csd.py input.csv input.cif
+-bash: /path/to/script/filter_los_csd.py: Permission denied
+```
+
+To fix it, set `umask` to `022` before script installation (see [ref](https://stackoverflow.com/questions/36898474/how-to-install-a-module-for-all-users-with-pip-on-linux) for more details), or just change permissions:
+
+```
+> sudo chmod 755 /path/to/script/filter_los_csd.py
+```
+
 ## Syntax
 
 ### Input and Output
