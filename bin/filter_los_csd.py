@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-################################### imports ###################################
+#%% Imports
 
 import re, sys, os, io
 import argparse
@@ -15,7 +15,7 @@ import pandas as pd
 import CifFile # https://anaconda.org/conda-forge/pycifrw
 
 
-############################## atomic properties ##############################
+#%% Atomic properties
 
 # main atomic symbols
 _AS = ['H','He','Li','Be','B','C','N','O','F','Ne','Na','Mg','Al','Si','P','S',
@@ -191,7 +191,7 @@ def rvdW(atom, r_type = 'csd'):
 
 
 
-############################## Support functions ##############################
+#%% Support functions
 
 def _str2float(line):
     '''
@@ -266,7 +266,7 @@ def _syms2matrix(line):
 
 
 
-############################### Data functions ################################
+#%% Data functions
 
 def read_multiple_CIF(path):
     '''
@@ -354,7 +354,7 @@ def get_max_dists(contacts):
 
 
 
-################################ Math functions ###############################
+#%% Math functions
 
 def _sin(x):
     '''
@@ -434,7 +434,7 @@ def _rotation_matrix(axis, theta):
 
 
 
-################################### Crystal ###################################
+#%% Crystal
 
 class Crystal():
     '''
@@ -753,7 +753,7 @@ class Crystal():
 
 
 
-################################## Main code ##################################
+#%% Main code
 
 if __name__ == '__main__':
     
@@ -882,7 +882,7 @@ if __name__ == '__main__':
         # check volume
         try:
             vol = get_volume(cifs[refcode])
-            if vol > V:
+            if V != -1 and vol > V:
                 print('{0}: cell volume exceeds {1:.1f} cutoff'.format(refcode, V))
                 df = csv.loc[[_[1] for _ in contacts[refcode]]]
                 df.loc[:,'LOS'] = '?'
@@ -952,8 +952,9 @@ if __name__ == '__main__':
         else:
             text += df.to_csv(header = False, index = False, float_format = '%.3f', sep = ',')
 
-# final save to file
-with open(path_out, 'a', newline = '\n') as outf:
-    outf.write(text)
+    # final save to file
+    with open(path_out, 'a', newline = '\n') as outf:
+        outf.write(text)
+
 
 
