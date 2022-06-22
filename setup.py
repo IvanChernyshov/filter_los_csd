@@ -22,7 +22,7 @@ setuptools.setup(
         'Topic :: Scientific/Engineering :: Chemistry'
     ],
     install_requires=[
-        'numpy==1.19.3', # TODO: remove restriction after fmod() fix: https://developercommunity.visualstudio.com/content/problem/1207405/fmod-after-an-update-to-windows-2004-is-causing-a.html
+        'numpy==1.22.0', # TODO: remove restriction after fmod() fix: https://developercommunity.visualstudio.com/content/problem/1207405/fmod-after-an-update-to-windows-2004-is-causing-a.html
         'pandas>=1.0',
         'PyCifRW>=4.0'
     ],
