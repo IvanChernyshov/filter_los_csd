@@ -576,9 +576,9 @@ class Crystal():
         '''
         Finds addends on a, b and c axes for search contacts
         '''
-        axes = pd.DataFrame({'x': [1,0,0], 'y': [0,1,0], 'z': [0,0,1]})
-        axes = _coords_transform(axes, self.cryst2cart)
-        a = list(axes.loc[0]); b = list(axes.loc[1]); c = list(axes.loc[2])
+        a = list(self.cryst2cart[0])
+        b = list(self.cryst2cart[1])
+        c = list(self.cryst2cart[2])
         self.axis_addends = [(self.Rmax+self.Radd)/_dist_p2p(b,c,a), (self.Rmax+self.Radd)/_dist_p2p(a,c,b), (self.Rmax+self.Radd)/_dist_p2p(a,b,c)]
     
     def _enlarge_cell(self):
@@ -597,7 +597,7 @@ class Crystal():
                     continue
                 _cell = deepcopy(cell0)
                 _cell.loc[:,axis] = [_ + delta for _ in _cell[axis]]
-                cell = cell.append(_cell, ignore_index = True)
+                cell = pd.concat([cell, _cell], ignore_index = True)
         # cut by precise cutoffs
         for i, axis in enumerate('xyz'):
             cell = cell.loc[(cell[axis] > -self.axis_addends[i]) & (cell[axis] < 1 + self.axis_addends[i])]
